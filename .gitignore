@@ -3,6 +3,7 @@
 tags
 target
 project/boot
+.Ds_Store
 .history
 project.vim
 *.old
