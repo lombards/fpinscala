@@ -37,11 +37,13 @@ object List { // `List` companion object. Contains functions for creating and wo
       case Cons(h, t) => Cons(h, append(t, a2))
     }
 
+
   def foldRight[A, B](as: List[A], z: B)(f: (A, B) => B): B = // Utility functions
     as match {
       case Nil => z
       case Cons(x, xs) => f(x, foldRight(xs, z)(f))
     }
+
 
   def sum2(ns: List[Int]) =
     foldRight(ns, 0)((x, y) => x + y)
@@ -130,8 +132,32 @@ object List { // `List` companion object. Contains functions for creating and wo
 
   def prod5(l: List[Double]): Double = foldLeft(l, 0.0)(_ * _)
 
-  def length5[A](l: List[A]): Int = foldLeft(l, 0)((acc,_) => acc + 1)
+  def length5[A](l: List[A]): Int = foldLeft(l, 0)((acc, _) => acc + 1)
 
+
+  //Exercise 3.15
+  def appendViaFoldRight[A](a1: List[A], a2: List[A]): List[A] = foldRight(a1, a2)((x, y) => Cons(x, y))
+
+  //Model answer
+  def appendViaFoldRightMA[A](a1: List[A], a2: List[A]): List[A] = foldRight(a1, a2)(Cons(_, _))
+
+
+  // Exercise 3.16
+  // Write a function that transforms a list of integers by adding 1 to each element.
+  // (Reminder: this should be a pure function that returns a new List!)
+  def add1(l: List[Int]): List[Int] = {
+    foldRight(l, List[Int]())((a,b) => Cons( a + 1, b))
+  }
+
+  // Exercise 3.17
+  //Write a function that turns each value in a List[Double] into a String.
+  // You can use the expression d.toString to convert some d: Double to a String.
+  def doublesToString(l: List[Double]): String = foldRight(l, "")((d,s) => s.concat(d.toString))
+  //Actually the book wanted a List of strings back, here is the model answer
+  def doubleToString(l: List[Double]): List[String] =
+    foldRight(l, Nil:List[String])((h,t) => Cons(h.toString,t))
+
+  
 
   def map[A, B](l: List[A])(f: A => B): List[B] = ???
 }
