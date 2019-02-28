@@ -157,9 +157,34 @@ object List { // `List` companion object. Contains functions for creating and wo
   def doubleToString(l: List[Double]): List[String] =
     foldRight(l, Nil:List[String])((h,t) => Cons(h.toString,t))
 
-  
 
-  def map[A, B](l: List[A])(f: A => B): List[B] = ???
+
+ // Exercise 3.18
+ // Write a function map that generalizes modifying each element in a list while
+  // maintaining the structure of the list. Here is its signature:[12]
+
+ // 12 In the standard library, map and flatMap are methods of List.
+
+  def map[A,B](as: List[A])(f: A => B): List[B] = {
+    as match {
+      case Nil => Nil
+      case Cons(h,t) => Cons(f(h), map(t)(f))
+    }
+  }
+
+//from the book
+def map[A,B](l: List[A])(f: A => B): List[B] =
+  foldRight(l, Nil:List[B])((h,t) => Cons(f(h),t))
+
+
+  // Exercise 3.19
+  //Write a function filter that removes elements from a list unless they satisfy a given predicate.
+  // Use it to remove all odd numbers from a List[Int].
+
+
+  def filter[A](as: List[A])(f: A => Boolean): List[A] =
+    foldRight(as, Nil:List[A])((h,t) => if (f(h)) Cons(h,t) else t)
+
 }
 
 
