@@ -146,35 +146,35 @@ object List { // `List` companion object. Contains functions for creating and wo
   // Write a function that transforms a list of integers by adding 1 to each element.
   // (Reminder: this should be a pure function that returns a new List!)
   def add1(l: List[Int]): List[Int] = {
-    foldRight(l, List[Int]())((a,b) => Cons( a + 1, b))
+    foldRight(l, List[Int]())((a, b) => Cons(a + 1, b))
   }
 
   // Exercise 3.17
   //Write a function that turns each value in a List[Double] into a String.
   // You can use the expression d.toString to convert some d: Double to a String.
-  def doublesToString(l: List[Double]): String = foldRight(l, "")((d,s) => s.concat(d.toString))
+  def doublesToString(l: List[Double]): String = foldRight(l, "")((d, s) => s.concat(d.toString))
+
   //Actually the book wanted a List of strings back, here is the model answer
   def doubleToString(l: List[Double]): List[String] =
-    foldRight(l, Nil:List[String])((h,t) => Cons(h.toString,t))
+    foldRight(l, Nil: List[String])((h, t) => Cons(h.toString, t))
 
 
-
- // Exercise 3.18
- // Write a function map that generalizes modifying each element in a list while
+  // Exercise 3.18
+  // Write a function map that generalizes modifying each element in a list while
   // maintaining the structure of the list. Here is its signature:[12]
 
- // 12 In the standard library, map and flatMap are methods of List.
+  // 12 In the standard library, map and flatMap are methods of List.
 
-  def map[A,B](as: List[A])(f: A => B): List[B] = {
+  def map[A, B](as: List[A])(f: A => B): List[B] = {
     as match {
       case Nil => Nil
-      case Cons(h,t) => Cons(f(h), map(t)(f))
+      case Cons(h, t) => Cons(f(h), map(t)(f))
     }
   }
 
-//from the book
-def map[A,B](l: List[A])(f: A => B): List[B] =
-  foldRight(l, Nil:List[B])((h,t) => Cons(f(h),t))
+  //from the book
+  def map[A, B](l: List[A])(f: A => B): List[B] =
+    foldRight(l, Nil: List[B])((h, t) => Cons(f(h), t))
 
 
   // Exercise 3.19
@@ -183,7 +183,71 @@ def map[A,B](l: List[A])(f: A => B): List[B] =
 
 
   def filter[A](as: List[A])(f: A => Boolean): List[A] =
-    foldRight(as, Nil:List[A])((h,t) => if (f(h)) Cons(h,t) else t)
+    foldRight(as, Nil: List[A])((h, t) => if (f(h)) Cons(h, t) else t)
+
+
+  // Exercise 3.20
+  // Write a function flatMap that works like map except that the function given will return a list instead of a single result,
+  // and that list should be inserted into the final resulting list. Here is its signature:
+  //  For instance, flatMap(List(1,2,3))(i => List(i,i)) should result in List(1,1,2,2,3,3).
+
+  def flatMap[A, B](as: List[A])(f: A => List[B]): List[B] =
+    foldRight(map(as)(f), Nil: List[B])((h, t) => append(h, t))
+
+  /*
+  Book answer
+  */
+  def flatMap[A, B](l: List[A])(f: A => List[B]): List[B] = ???
+    //concat(map(l)(f))
+
+  // Exercise 3.21
+  //Use flatMap to implement filter.
+  def filterWithFlatMap[A](as: List[A])(f: A => Boolean): List[A] =
+    flatMap(as)(a => if (f(a)) Cons(a, Nil:List[A]) else Nil)
+
+  //book answer
+  def filterViaFlatMap[A](l: List[A])(f: A => Boolean): List[A] =
+    flatMap(l)(a => if (f(a)) List(a) else Nil)
+
+
+  //Exercise 3.22
+  //Write a function that accepts two lists and constructs a new list by adding corresponding elements.
+  // For example, List(1,2,3) and List(4,5,6) become List(5,7,9).
+  def matchAndAdd(a: List[Int], b: List[Int]) : List[Int] = {
+    a match {
+      case Nil => Nil
+      case Cons(h, t) => b match {
+        case Nil => Nil
+        case Cons(x, y) => Cons(h + x, matchAndAdd(t, y));
+      }
+    }
+  }
+
+  //Book answer
+  def addPairwise(a: List[Int], b: List[Int]): List[Int] = (a,b) match {
+    case (Nil, _) => Nil
+    case (_, Nil) => Nil
+    case (Cons(h1,t1), Cons(h2,t2)) => Cons(h1+h2, addPairwise(t1,t2))
+  }
+
+
+
+  //Exercise 3.23
+  //Generalize the function you just wrote so that it’s not specific to integers or addition.
+  // Name your generalized function zipWith.
+
+  def zipWith[A,B,C](a: List[A], b: List[B])(f: (A,B) => C): List[C] = {
+    (a,b) match {
+      case (Nil, _) => Nil
+      case (_, Nil) => Nil
+      case(Cons(h1, t1), Cons(h2, t2)) => Cons(f(h1,h2), zipWith(t1, t2)(f))
+    }
+  }
+
+
+  //Book same answer, yay!
+  
+
 
 }
 
