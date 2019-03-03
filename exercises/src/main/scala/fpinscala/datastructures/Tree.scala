@@ -52,4 +52,8 @@ object Tree {
 
   //Book answer: same ! yay!
 
+  def fold[A,B](t: Tree[A])(l: A => B)(b: (B,B) => B): B = t match {
+    case Leaf(a) => l(a)
+    case Branch(l,r) => b(l,r)
+  }
 }
