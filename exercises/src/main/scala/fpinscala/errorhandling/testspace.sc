@@ -1,11 +1,10 @@
-package fpinscala.errorhandling
+import fpinscala.errorhandling.None
+
+import scala.{Either => _, Option => _, Some => _, _} // hide std library `Option`, `Some` and `Either`, since we are writing our own in this chapter
 
 
-import scala.{Option => _, Some => _, Either => _, _} // hide std library `Option`, `Some` and `Either`, since we are writing our own in this chapter
 
 sealed trait Option[+A] {
-
-
 
 
   def map[B](f: A => B): Option[B] = this match {
@@ -35,6 +34,7 @@ sealed trait Option[+A] {
     case _ => None
   }
 }
+
 case class Some[+A](get: A) extends Option[A]
 case object None extends Option[Nothing]
 
@@ -56,19 +56,7 @@ object Option {
     catch { case e: Exception => 43 }
   }
 
-  def mean(xs: Seq[Double]): Option[Double] =
-    if (xs.isEmpty) None
-    else Some(xs.sum / xs.length)
 
-
-  //Exercise 4.2
-  //Implement the variance function in terms of flatMap.
-  // If the mean of a sequence is m, the variance is the mean of math.pow(x - m, 2) for each element x in the sequence.
-  // See the definition of variance on Wikipedia (http://mng.bz/0Qsr).
-  def variance(xs: Seq[Double]): Option[Double] = {
-    //book
-    mean(xs) flatMap (m => mean(xs.map(x => math.pow(x - m, 2))))
-  }
 
 
   //Exercise 4.3
@@ -83,12 +71,18 @@ object Option {
   // otherwise the result should be Some with a list of all the values. Here is its signature:[3]
 
   def sequence[A](a: List[Option[A]]): Option[List[A]] = {
-    traverse(a) (e => e)
+    //book
+    a.foldRight[Option[List[A]]](Some(Nil))((x,y) => map2(x,y)(_ :: _))
   }
 
-  def traverse[A, B](a: List[A])(f: A => Option[B]): Option[List[B]] = {
-    a.foldRight[Option[List[B]]](Some(Nil))((h,t) => map2(f(h),t)(_ :: _))
-
-  }
-
+  //def traverse[A, B](a: List[A])(f: A => Option[B]): Option[List[B]] = ???
 }
+
+
+val myList1 = List[Option[String]](Some("Hello"), Some("world"))
+val myList2 = List[Option[String]](None, Some("world"))
+val myList3 = List[Option[String]](Some("world"), None)
+val myList4 = List[Option[String]](None, None)
+
+
+val myseq = sequence(myList1)
