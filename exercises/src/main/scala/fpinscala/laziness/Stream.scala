@@ -17,12 +17,28 @@ trait Stream[+A] {
     case Empty => None
     case Cons(h, t) => if (f(h())) Some(h()) else t().find(f)
   }
-  def take(n: Int): Stream[A] = ???
 
-  def drop(n: Int): Stream[A] = ???
+  def take(n: Int): Stream[A] = this match {
+    case Cons(h,t) if n > 1 => cons(h(), t().take(n-1))
+    case Cons(h,_) if n == 1 => cons(h(), empty)
+    case _ => empty;
+  }
 
-  def takeWhile(p: A => Boolean): Stream[A] = ???
+  def drop(n: Int): Stream[A] = this match {
+    case Cons(h,t) if n < 0 => t().drop(n-1)
+    case _ => this
+  }
 
+  // Exercise 5.3
+  //Write the function takeWhile for returning all starting elements of a Stream that match the given predicate.
+  def takeWhile(p: A => Boolean): Stream[A] = this match {
+    case Cons(h,t) if p(h()) => cons(h(), t().takeWhile(p))
+    case _ => empty
+  }
+
+  // Exercise 5.4
+  //Implement forAll, which checks that all elements in the Stream match a given predicate.
+  // Your implementation should terminate the traversal as soon as it encounters a nonmatching value.
   def forAll(p: A => Boolean): Boolean = ???
 
   def headOption: Option[A] = ???
