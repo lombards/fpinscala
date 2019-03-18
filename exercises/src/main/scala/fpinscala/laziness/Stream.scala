@@ -39,13 +39,23 @@ trait Stream[+A] {
   // Exercise 5.4
   //Implement forAll, which checks that all elements in the Stream match a given predicate.
   // Your implementation should terminate the traversal as soon as it encounters a nonmatching value.
-  def forAll(p: A => Boolean): Boolean = ???
+  def forAll(p: A => Boolean): Boolean = {
+    foldRight(false)((a,b) => p(a) && b)
+  }
 
   def headOption: Option[A] = ???
 
   // 5.7 map, filter, append, flatmap using foldRight. Part of the exercise is
   // writing your own function signatures.
+  def map[B] (f: A => B) : Stream[B] = {
+    foldRight(Empty[B])((a,b) => cons(f(a), b))
+  }
 
+  def filter(p: A => Boolean): Stream[A] = {
+    foldRight(Empty[A])((h,t) => if (p(h)) cons(h, t) else t)
+  }
+
+  def append[B>:A](s: => Stream[B]): Stream[B] = ???
   def startsWith[B](s: Stream[B]): Boolean = ???
 }
 case object Empty extends Stream[Nothing]
@@ -61,11 +71,45 @@ object Stream {
   def empty[A]: Stream[A] = Empty
 
   def apply[A](as: A*): Stream[A] =
-    if (as.isEmpty) empty 
+    if (as.isEmpty) empty
     else cons(as.head, apply(as.tail: _*))
 
   val ones: Stream[Int] = Stream.cons(1, ones)
-  def from(n: Int): Stream[Int] = ???
 
-  def unfold[A, S](z: S)(f: S => Option[(A, S)]): Stream[A] = ???
+  def constant[A](a: A): Stream[A] = {
+    cons(a, constant(a))
+  }
+
+  def from(n: Int): Stream[Int] =
+    cons(n, from(n+1))
+
+  val fibs = {
+    def go(n: Int, m: Int): Stream[Int] =
+      cons(n, go(m, n+m))
+    go(0, 1)
+  }
+
+  def unfold[A, S](z: S)(f: S => Option[(A, S)]): Stream[A] =
+    f(z) match {
+      case Some((h,s)) => cons(h, unfold(s)(f))
+      case None => empty
+    }
+
+  // Exercise 5.12
+  //Write fibs, from, constant, and ones in terms of unfold.[8]
+  def onesViaUnfold():Stream[Int] = {
+    unfold(1)(_ => Some(1,1))
+  }
+
+  def constantViaUnfold[A](a: A): Stream[A] = {
+    unfold(a)(_ => Some(a,a))
+  }
+
+  def fromViaUnfold(i: Int): Stream[Int] = {
+    unfold(i)(i => Some(i, i + 1))
+  }
+
+  def fibViaUnfold(): Stream[Int] ={
+    unfold((0, 1)){ case (n,m) => Some(n, (m, n+m))}
+  }
 }
