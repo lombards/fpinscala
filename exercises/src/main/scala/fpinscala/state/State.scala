@@ -30,15 +30,44 @@ object RNG {
       (f(a), rng2)
     }
 
-  def nonNegativeInt(rng: RNG): (Int, RNG) = ???
+  // Exercise 6.1
+  //Write a function that uses RNG.nextInt to generate a random integer between 0 and Int.maxValue (inclusive).
+  //Make sure to handle the corner case when nextInt returns Int.MinValue, which doesn’t have a non-negative counterpart.
+  //
+  def nonNegativeInt(rng: RNG): (Int, RNG) = {
+    val (i, r) = rng.nextInt
+    if (i < 0) (-(i+1), r) else (i,r)
+  }
 
-  def double(rng: RNG): (Double, RNG) = ???
+  //Exercise 6.2
+  //Write a function to generate a Double between 0 and 1, not including 1. Note: You can use Int.MaxValue to obtain
+  // the maximum positive integer value, and you can use x.toDouble to convert an x: Int to a Double.
+  def double(rng: RNG): (Double, RNG) = {
+    val (i, r) = nonNegativeInt(rng)
+    (i / (Int.MaxValue.toDouble + 1), r)
+  }
+  // Exercise 6.3
+  //Write functions to generate an (Int, Double) pair, a (Double, Int) pair, and a (Double, Double, Double) 3-tuple.
+  // You should be able to reuse the functions you’ve already written.
+  def intDouble(rng: RNG): ((Int,Double), RNG) = {
+    val (i, r) = nonNegativeInt(rng)
+    val (j, s) = double(rng)
 
-  def intDouble(rng: RNG): ((Int,Double), RNG) = ???
+    ((i,j), r)
+  }
 
-  def doubleInt(rng: RNG): ((Double,Int), RNG) = ???
+  def doubleInt(rng: RNG): ((Double,Int), RNG) = {
+    val ((i,j), s) = intDouble(rng)
+    ((j,i),s)
+  }
 
-  def double3(rng: RNG): ((Double,Double,Double), RNG) = ???
+  def double3(rng: RNG): ((Double,Double,Double), RNG) = {
+    val (i, r) = double(rng)
+    val (j, r1) = double(r)
+    val (k, r2) = double(r1)
+
+    ((i,j,k), r2)
+  }
 
   def ints(count: Int)(rng: RNG): (List[Int], RNG) = ???
 

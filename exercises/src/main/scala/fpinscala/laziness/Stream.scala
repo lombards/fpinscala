@@ -55,6 +55,17 @@ trait Stream[+A] {
     foldRight(Empty[A])((h,t) => if (p(h)) cons(h, t) else t)
   }
 
+  //Exercise 5.13
+  //Use unfold to implement map, take, takeWhile, zipWith (as in chapter 3), and zipAll.
+  // The zipAll function should continue the traversal as long as either stream has more elements—it uses Option
+  // to indicate whether each stream has been exhausted.
+  def mapViaUnfold[B] (f: A => B) : Stream[B] = {
+    foldRight(Empty[B])((a,b) => cons(f(a), b))
+  }
+
+  def zipAll[B](s2: Stream[B]): Stream[(Option[A],Option[B])] = ???
+
+
   def append[B>:A](s: => Stream[B]): Stream[B] = ???
   def startsWith[B](s: Stream[B]): Boolean = ???
 }
@@ -112,4 +123,6 @@ object Stream {
   def fibViaUnfold(): Stream[Int] ={
     unfold((0, 1)){ case (n,m) => Some(n, (m, n+m))}
   }
+
+
 }
