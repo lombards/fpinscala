@@ -69,9 +69,23 @@ object RNG {
     ((i,j,k), r2)
   }
 
-  def ints(count: Int)(rng: RNG): (List[Int], RNG) = ???
+  def ints(count: Int)(rng: RNG): (List[Int], RNG) = {
+    if(count == 0) (List(), rng)
+    else {
+      val (i1,s1) = rng.nextInt
+      val (i2,s2) = ints(count-1)(s1)
+      (i1 :: i2, s2)
+    }
+  }
 
-  def map2[A,B,C](ra: Rand[A], rb: Rand[B])(f: (A, B) => C): Rand[C] = ???
+  //Exercise 6.5
+  //Use map to reimplement double in a more elegant way. See exercise 6.2.
+  def doubleViaMap(): Rand[Double] = {
+    map(nonNegativeInt)(i => i/(Int.MaxValue.toDouble + 1))
+  }
+  def map2[A,B,C](ra: Rand[A], rb: Rand[B])(f: (A, B) => C): Rand[C] = {
+    
+  }
 
   def sequence[A](fs: List[Rand[A]]): Rand[List[A]] = ???
 
